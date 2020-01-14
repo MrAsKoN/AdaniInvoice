@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wrapper">
+    <div class="title">
+        Registration Form
+    </div>
+    <form class="form" action={% url 'register' %} method="post">
+        {% csrf_token %}
+        <div class="inputfield">
+            <label><b>UserID</b></label>
+            <input class="input" type="text" name="userid" placeholder="UserID" >
+        </div>
+        <div class="inputfield">
+            <label><b>Full Name</b></label>
+            <input class="input" type="text" name="name" placeholder="Name" >
+        </div>
+        <div class="inputfield">
+            <label><b>Password</b></label>
+            <input class="input" type="password" name="password" placeholder="Password" >
+        </div>
+
+        <div class="inputfield">
+            <label><b>Email</b></label>
+            <input class="input" type="email" name="email" placeholder="Email" >
+        </div>
+
+        <div class="inputfield">
+            <label><b>Address</b></label>
+            <textarea class="textarea" name="address" placeholder="Address"></textarea>
+        </div>
+        <div class="inputfield">
+            <label><b>Phone No.</b></label>
+            <input class="input" type="number" name="phoneno" placeholder="Phone No." >
+        </div>
+        <div class="inputfield">
+            <button class="btn" type="submit">Register</button>
+        </div>
+
+    </form>
+    <span>Already have an account?</span><a href={% url 'showlogin' %}>Login</a><span> here.</span>
+</div>
+{% endblock content %}

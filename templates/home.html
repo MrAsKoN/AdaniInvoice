@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>Welcome {{ email }}</h1>
+    <h2>Home boi</h2>
+
+    <a class="btn" href={% url 'logout' %}>Logout</a>
+
+{% endblock content %}
