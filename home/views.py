@@ -9,9 +9,9 @@ def dashboard(request):
     # except:
     #     return redirect(usersviews.login)
     # return render(request, 'newhome.html')
-    if 'uid' not in request.session:
-        return redirect(usersviews.login)
-    return render(request,'newhome.html')
+    if 'uid' in request.session:
+        return render(request,'newhome.html')
+    return redirect(usersviews.login)
 
 def adminhome(request):
     try:

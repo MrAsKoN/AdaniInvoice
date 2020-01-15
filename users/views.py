@@ -40,6 +40,7 @@ def register(request):
             return redirect(register)
 
         uid = user['localId']
+        request.session['uid'] = uid
         data = {'publickey': publickey, "name": name, 'email': email, 'address': address, 'phoneno': phoneno, 'wallet': 0}
         database.child("users").child(uid).set(data)
         # messages.success(request, "User registration successful!")
