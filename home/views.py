@@ -8,7 +8,7 @@ def home(request):
         print(request.session['uid'])
     except:
         return redirect(usersviews.showlogin)
-    return render(request, 'home.html')
+    return render(request, 'newhome.html')
 
 
 def adminhome(request):

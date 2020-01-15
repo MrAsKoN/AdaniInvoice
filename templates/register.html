@@ -7,8 +7,8 @@
     <form class="form" action={% url 'register' %} method="post">
         {% csrf_token %}
         <div class="inputfield">
-            <label><b>UserID</b></label>
-            <input class="input" type="text" name="userid" placeholder="UserID" >
+            <label><b>Public Key</b></label>
+            <input class="input" type="text" name="publickey" placeholder="Public Key" >
         </div>
         <div class="inputfield">
             <label><b>Full Name</b></label>

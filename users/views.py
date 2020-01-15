@@ -27,7 +27,7 @@ def showregister(request):
 
 def register(request):
     if request.method == 'POST':
-        userid = request.POST.get('userid')
+        publickey = request.POST.get('publickey')
         name = request.POST.get('name')
         address = request.POST.get('address')
         phoneno = request.POST.get('phoneno')
@@ -42,7 +42,7 @@ def register(request):
             messages.error(request, "Invalid Credentials!")
             return render(request, 'register.html')
         uid = user['localId']
-        data = {'userid': userid, "name": name, 'email': email, 'address': address, 'phoneno': phoneno, 'wallet': 0}
+        data = {'publickey': publickey, "name": name, 'email': email, 'address': address, 'phoneno': phoneno, 'wallet': 0}
         database.child("users").child(uid).set(data)
         messages.success(request, "User registration successful!")
         return render(request, 'login.html')
