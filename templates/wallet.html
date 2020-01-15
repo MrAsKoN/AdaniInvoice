@@ -57,66 +57,7 @@
         <div class="col-md-10" id="main">
             <h1>Dashboard</h1>
 
-            <form method="post">
-                {% csrf_token %}
-                {% if check %}
-                    <button type="submit" class="btn btn-secondary" name="filter" value="unfiltered">Display All Invoices</button>
-                    {% else %}
-                    <button type="submit" class="btn btn-secondary" name="filter" value="filtered">Filter Pending Invoices</button>
-                {% endif %}
-            </form>
-
-            <!-- Table with panel -->
-            <div class="card card-cascade narrower">
-                <div class="px-4">
-                    <div class="table-wrapper">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                            <tr>
-                                <th>
-                                    <label class="form-check-label" for="checkbox" class="mr-2 label-table"></label>
-                                </th>
-                                <th class="th-lg">
-                                    <span>Invoice No.</span>
-                                </th>
-
-                                <th class="th-lg">
-                                    <span>Due Date</span>
-                                </th>
-                                <th class="th-lg">
-                                    <span>Total Price</span>
-                                </th>
-                                <th class="th-lg">
-                                    <span>Outstanding Price</span>
-                                </th>
-                                {% if check %}
-                                <th class="th-lg">
-                                    <span></span>
-                                </th>
-                                {% endif %}
-                            </tr>
-                            </thead>
-                            <!--Table body-->
-                            <tbody>
-                            {% for invoice in invoices %}
-                                <tr>
-                                    <th scope="row">
-                                    </th>
-                                    <td>{{ invoice.invoiceNumber }}</td>
-                                    <td>{{ invoice.dueDate }}</td>
-                                    <td>{{ invoice.totalPrice }}</td>
-                                    <td>{{ invoice.remaining }}</td>
-                                {% if check %}
-                                    <td>
-                                        <a class="btn btn-amber" href="{% url 'pay' id=invoice.invoiceNumber %}">Proceed to pay</a></td>
-                                {% endif %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            Rushabh se discuss karna hai wallet credit
         </div>
     </div>
 </div>

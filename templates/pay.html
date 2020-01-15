@@ -30,7 +30,8 @@
     <a class="navbar-brand" style="color: white">Adani Portz and SEZ Ltd</a>
     <form class="form-inline">
         <div class="btn-group">
-            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
                 {{ name }}
             </button>
             <div class="dropdown-menu dropdown-menu-right">
@@ -55,18 +56,8 @@
             </div>
         </div>
         <div class="col-md-10" id="main">
-            <h1>Dashboard</h1>
+            <h1>Make Payment</h1>
 
-            <form method="post">
-                {% csrf_token %}
-                {% if check %}
-                    <button type="submit" class="btn btn-secondary" name="filter" value="unfiltered">Display All Invoices</button>
-                    {% else %}
-                    <button type="submit" class="btn btn-secondary" name="filter" value="filtered">Filter Pending Invoices</button>
-                {% endif %}
-            </form>
-
-            <!-- Table with panel -->
             <div class="card card-cascade narrower">
                 <div class="px-4">
                     <div class="table-wrapper">
@@ -77,46 +68,43 @@
                                     <label class="form-check-label" for="checkbox" class="mr-2 label-table"></label>
                                 </th>
                                 <th class="th-lg">
-                                    <span>Invoice No.</span>
+                                    <span>Field</span>
                                 </th>
 
                                 <th class="th-lg">
-                                    <span>Due Date</span>
+                                    <span>Amount</span>
                                 </th>
-                                <th class="th-lg">
-                                    <span>Total Price</span>
-                                </th>
-                                <th class="th-lg">
-                                    <span>Outstanding Price</span>
-                                </th>
-                                {% if check %}
-                                <th class="th-lg">
-                                    <span></span>
-                                </th>
-                                {% endif %}
                             </tr>
                             </thead>
                             <!--Table body-->
                             <tbody>
-                            {% for invoice in invoices %}
-                                <tr>
-                                    <th scope="row">
-                                    </th>
-                                    <td>{{ invoice.invoiceNumber }}</td>
-                                    <td>{{ invoice.dueDate }}</td>
-                                    <td>{{ invoice.totalPrice }}</td>
-                                    <td>{{ invoice.remaining }}</td>
-                                {% if check %}
-                                    <td>
-                                        <a class="btn btn-amber" href="{% url 'pay' id=invoice.invoiceNumber %}">Proceed to pay</a></td>
-                                {% endif %}
-                                </tr>
-                            {% endfor %}
+                            <tr>
+                                <th scope="row">
+                                </th>
+                                <td>Wallet Balance</td>
+                                <td>{{ wallet }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                </th>
+                                <td>Outstanding Amount</td>
+                                <td>{{ remaining }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                </th>
+                                <td>Wallet Balance after Transaction</td>
+                                <td>{{ diff }}</td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">PAY</button>
+            </form>
         </div>
     </div>
 </div>

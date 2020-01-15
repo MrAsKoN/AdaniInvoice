@@ -27,5 +27,7 @@ urlpatterns = [
     path('register/', usersviews.register, name='register'),
     path('dashboard/', homeviews.dashboard, name='dashboard'),
     path('adminhome/', homeviews.adminhome, name='adminhome'),
-    path('invoices/',homeviews.invoices,name='invoices'),
+    # path('invoices/',homeviews.invoices,name='invoices'),
+    path('wallet', homeviews.wallet,name='wallet'),
+    path('pay/<id>',homeviews.pay,name='pay')
 ]
