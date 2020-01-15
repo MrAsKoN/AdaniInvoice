@@ -21,10 +21,6 @@ auth = firebase.auth()
 database = firebase.database()
 
 
-def showregister(request):
-    return render(request, 'register.html')
-
-
 def register(request):
     if request.method == 'POST':
         publickey = request.POST.get('publickey')
@@ -35,22 +31,20 @@ def register(request):
         password = request.POST.get('password')
 
         if not (name and email and password):
-            return render(request, 'register.html')
+            messages.error(request, "Fill all the fields!")
+            return redirect(register)
         try:
             user = auth.create_user_with_email_and_password(email, password)
         except:
-            messages.error(request, "Invalid Credentials!")
-            return render(request, 'register.html')
+            messages.error(request, "Account Exists!")
+            return redirect(register)
+
         uid = user['localId']
         data = {'publickey': publickey, "name": name, 'email': email, 'address': address, 'phoneno': phoneno, 'wallet': 0}
         database.child("users").child(uid).set(data)
-        messages.success(request, "User registration successful!")
-        return render(request, 'login.html')
+        # messages.success(request, "User registration successful!")
+        return redirect(homeviews.dashboard)
     return render(request, 'register.html')
-
-
-def showlogin(request):
-    return render(request, 'login.html')
 
 
 def login(request):
@@ -61,12 +55,12 @@ def login(request):
         print(role)
         if not role:
             messages.error(request, "Please select your role!")
-            return render(request, 'login.html')
+            return redirect(login)
         try:
             user = auth.sign_in_with_email_and_password(email, password)
         except:
-            messages.error(request, "The Email and password you have entered are invalid!")
-            return render(request, 'login.html')
+            messages.error(request, "The Email or password you have entered are invalid!")
+            return redirect(login)
         session_id = user['localId']
         request.session['uid'] = str(session_id)
         users = database.child(role).get()
@@ -76,26 +70,19 @@ def login(request):
             print(u.val())
             context = u.val()
             if role == 'users':
-                return redirect(homeviews.home)
+                return redirect(homeviews.dashboard)
             if role == 'admin':
                 return redirect(homeviews.adminhome)
-        return redirect(homeviews.home)
-    return render(request, 'register.html')
+        return redirect(homeviews.dashboard)
+    return render(request, 'login.html')
 
 
 def logout(request):
-    try:
+    if 'uid' in request.session:
         del request.session['uid']
-        request.session.modified = True
-    except KeyError:
-        pass
-    authen.logout(request)
-    auth.current_user = None
-    return render(request, 'login.html')
+        authen.logout(request)
 
-# def home(request):
-#     try:
-#         print(request.session['uid'])
-#     except:
-#         return redirect(showlogin)
-#     return render(request, 'home.html')
+    return redirect(login)
+
+
+

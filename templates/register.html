@@ -4,7 +4,7 @@
     <div class="title">
         Registration Form
     </div>
-    <form class="form" action={% url 'register' %} method="post">
+    <form class="form" method="post">
         {% csrf_token %}
         <div class="inputfield">
             <label><b>Public Key</b></label>
@@ -37,6 +37,6 @@
         </div>
 
     </form>
-    <span>Already have an account?</span><a href={% url 'showlogin' %}>Login</a><span> here.</span>
+    <span>Already have an account?</span><a href={% url 'login' %}>Login</a><span> here.</span>
 </div>
 {% endblock content %}

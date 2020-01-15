@@ -3,13 +3,15 @@ from django.contrib.auth.decorators import login_required
 import users.views as usersviews
 
 
-def home(request):
-    try:
-        print(request.session['uid'])
-    except:
-        return redirect(usersviews.showlogin)
-    return render(request, 'newhome.html')
-
+def dashboard(request):
+    # try:
+    #     print(request.session['uid'])
+    # except:
+    #     return redirect(usersviews.login)
+    # return render(request, 'newhome.html')
+    if 'uid' not in request.session:
+        return redirect(usersviews.login)
+    return render(request,'newhome.html')
 
 def adminhome(request):
     try:
