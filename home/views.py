@@ -19,3 +19,8 @@ def adminhome(request):
     except:
         return redirect(usersviews.showlogin)
     return render(request,'adminhome.html')
+
+def invoices(request):
+    if 'uid' in request.session:
+        return render(request,'invoices.html')
+    return redirect(usersviews.login)
