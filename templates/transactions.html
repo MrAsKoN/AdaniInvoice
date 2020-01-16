@@ -2,20 +2,98 @@
 {% load static %}
 {% block dashboard %}
 
-        <div class="col-md-10" id="main">
-            <h1>Transactions</h1>
-
-
-
-            {% for t in transactions %}
-                <h3>Invoice No = {{ t.id }}</h3><br>
-                {% for detail in t.data %}
-                    <h5>Transfer Amount : {{ detail.amount }}</h5>
-                    <h5>Mode Of Payment :{{ detail.modeOfPayment }}</h5>
-                    <h5>Closing Balance - {{detail.closing_balance }}</h5>
-                    <br>
-                {% endfor %}
+    <div class="col-md-10" id="main">
+        <h1>Transactions</h1>
+        <br>
+        {% if transactions %}
+            {% for transaction in transactions %}
+                <span class="font-weight-bold">Date of transaction</span>: {{ transaction.date }}<br>
+                <div class="row">
+                    <div class="col-md-6">
+                            <br><h4>Credit transactions:</h4>
+                        {% if transaction.credit %}
+                            <div class="card card-cascade narrower">
+                                <div class="px-4">
+                                    <div class="table-wrapper">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                            <tr>
+                                                <th class="th-lg">
+                                                    <span>Transaction Time(H-M-S)</span>
+                                                </th>
+                                                <th class="th-lg">
+                                                    <span>Amount</span>
+                                                </th>
+                                                <th class="th-lg">
+                                                    <span>Closing Balance</span>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for c in transaction.credit %}
+                                                <tr>
+                                                    <td>{{ c.time }}</td>
+                                                    <td>{{ c.details.amount }}</td>
+                                                    <td>{{ c.details.closing_balance }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            No credit transactions
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                            <br><h4>Payment transactions:</h4>
+                        {% if transaction.payment %}
+                            <div class="card card-cascade narrower">
+                                <div class="px-4">
+                                    <div class="table-wrapper">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                            <tr>
+                                                <th class="th-lg">
+                                                    <span>Transaction Time(H-M-S)</span>
+                                                </th>
+                                                <th class="th-lg">
+                                                    <span>Invoice Id</span>
+                                                </th>
+                                                <th class="th-lg">
+                                                    <span>Amount</span>
+                                                </th>
+                                                <th>
+                                                    <span>Closing Balance</span>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for c in transaction.payment %}
+                                                <tr>
+                                                    <td>{{ c.time }}</td>
+                                                    <td>{{ c.details.invoiceId }}</td>
+                                                    <td>{{ c.details.amount }}</td>
+                                                    <td>{{ c.details.closing_balance }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="px-4">
+                            No payment transactions
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
                 <hr>
             {% endfor %}
-        </div>
+        {% else %}
+            <h3>No Transactions Made</h3>
+        {% endif %}
+    </div>
 {% endblock dashboard %}

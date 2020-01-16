@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'chartjs',
 ]
 
 MIDDLEWARE = [
@@ -116,3 +117,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 LOGIN_URL = ''
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'teamhexagons@gmail.com'
+EMAIL_HOST_PASSWORD = 'team6gons'
+EMAIL_PORT = 587

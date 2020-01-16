@@ -1,6 +1,8 @@
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 import users.views as usersviews
+from Invoice import settings
 from firebase import getReferences
 from datetime import datetime
 from django.contrib import messages
@@ -115,31 +117,65 @@ def adminhome(request):
             print(key,value)
     except:
         return redirect(usersviews.login)
-    return render(request,'adminhome.html')
+
+    month = datetime.now().month
+    print('Month--------------------',month)
+    data = getTotalRevenue(int(month))
+    print('data---------------------',data)
+    if month == 1:
+        previousMonth = 12
+    else:
+        previousMonth = month - 1
+
+    previousData = getTotalRevenue(previousMonth)['revenue']
+    print(previousData)
+
+    return render(request,'adminhome.html',data)
+
 
 def mywallet(request):
     if 'uid' in request.session:
         curr_balance = int(database.child('Bank').child(request.session['uid']).child('balance').get().val())
         if request.method == 'POST':
             credit = int(request.POST['credit'])
-            if credit <= 0:
-                messages.error(request,'Invalid Credit Amount')
+            if credit <= 0 or credit > curr_balance:
+                messages.error(request, 'Invalid Credit Amount')
                 return redirect(mywallet)
             curr_balance -= credit
             database.child('Bank').child(request.session['uid']).update({
                 'balance': curr_balance
             })
-            currWallet = int(database.child('user').child('customer').child(request.session['uid']).child('wallet').get().val())
-            currWallet+=credit
+            currWallet = int(
+                database.child('user').child('customer').child(request.session['uid']).child('wallet').get().val())
+            currWallet += credit
             database.child('user').child('customer').child(request.session['uid']).update({
                 'wallet': currWallet
             })
+
+            email = database.child('user').child('customer').child(request.session['uid']).child(
+                'email').get().val()
+            # send_mail('Amount Credited to Your Wallet',
+            #           'An amount of Rs. {} was credited to your account. \nFinal Wallet Balance = Rs. {}'.format(
+            #               credit, currWallet),
+            #           settings.EMAIL_HOST_USER,
+            #           [email],
+            #           fail_silently=False)
+
+            date = str(datetime.today().strftime('%d-%m-%Y'))
+            time = str(datetime.today().strftime('%H-%M-%S'))
+            database.child('transactions').child(request.session['uid']).child(date).child('credit').child(
+                time).set({
+                'amount': credit,
+                'closing_balance': currWallet
+            })
+            request.session['walletMoney'] = currWallet
             return redirect(dashboard)
-        return render(request,'wallet.html', {'curr_balance': curr_balance ,'name':request.session['name'] , 'walletMoney': request.session['walletMoney']})
+
+        return render(request, 'wallet.html', {'curr_balance': curr_balance, 'name': request.session['name'],
+                                               'walletMoney': request.session['walletMoney'] , 'count' : notify(request.session['uid'])})
     return redirect(usersviews.login)
 
-
-def pay(request,id):
+def pay(request, id):
     if 'uid' in request.session:
         usr = database.child('user').child('customer').child(request.session['uid']).get().val()
         wallet = int(usr['wallet'])
@@ -167,83 +203,109 @@ def pay(request,id):
             }
         if request.method == 'POST':
             if wallet != 0:
+                email = database.child('user').child('customer').child(request.session['uid']).child('email').get().val()
                 if wallet >= remaining:
-                    transactions = database.child('transactions').child(request.session['uid']).child(id).get().val()
-                    tid = None
-                    if(transactions == None):
-                        tid = 1
-                    else:
-                        tid = len(transactions)
-                    database.child('transactions').child(request.session['uid']).child(id).child(tid).set({
-                        'invoiceId':id,
+                    date = str(datetime.today().strftime('%d-%m-%Y'))
+                    time = str(datetime.today().strftime('%H-%M-%S'))
+                    database.child('transactions').child(request.session['uid']).child(date).child('payment').child(
+                        time).set({
+                        'invoiceId': id,
                         'amount': remaining,
-                        'modeOfPayment': 'Wallet'
+                        'closing_balance': wallet - remaining
                     })
                     database.child('user').child('customer').child(request.session['uid']).update({
-                        'wallet': wallet-remaining
+                        'wallet': wallet - remaining
                     })
                     database.child('invoice').child(id).update({
                         'remaining': 0
                     })
+
+                    adani = database.child('Bank').child('Adani').child('balance').get().val()
+                    adani = int(adani)
+                    database.child('Bank').child('Adani').update({
+                        'balance': adani+remaining
+                    })
+                    request.session['walletMoney'] = wallet - remaining
+
+
+                    # send_mail('Amount Debited from your wallet',
+                    #           'An amount of Rs. {} was debited from your account.\nTransaction made for Invoice {}.\nRemaining Wallet Balance is Rs. {}.\nOutstanding Due Amount = Rs. 0'.format(
+                    #               remaining, id, wallet - remaining),
+                    #           settings.EMAIL_HOST_USER,
+                    #           [email],
+                    #           fail_silently=False)
+
                 else:
-                    transactions = database.child('transactions').child(request.session['uid']).child(id).get().val()
-                    tid = None
-                    if (transactions == None):
-                        tid = 1
-                    else:
-                        tid = len(transactions)
-                    database.child('transactions').child(request.session['uid']).child(id).child(tid).set({
+                    date = str(datetime.today().strftime('%d-%m-%Y'))
+                    time = str(datetime.today().strftime('%H-%M-%S'))
+                    database.child('transactions').child(request.session['uid']).child(date).child('payment').child(
+                        time).set({
                         'invoiceId': id,
                         'amount': wallet,
-                        'modeOfPayment': 'Wallet'
+                        'closing_balance': 0
                     })
                     database.child('user').child('customer').child(request.session['uid']).update({
                         'wallet': 0
                     })
                     database.child('invoice').child(id).update({
-                        'remaining': remaining-wallet
+                        'remaining': remaining - wallet
                     })
+
+                    adani = database.child('Bank').child('Adani').child('balance').get().val()
+                    adani = int(adani)
+                    database.child('Bank').child('Adani').update({
+                        'balance': wallet+adani
+                    })
+                    request.session['walletMoney'] = 0
+                    # send_mail('Amount Debited from your wallet',
+                    #           'An amount of Rs. {} was debited from your account.\nTransaction made for Invoice {}.\nRemaining Wallet Balance is Rs. 0.\nOutstanding Due Amount = Rs. {}'.format(
+                    #               wallet, id, remaining - wallet),
+                    #           settings.EMAIL_HOST_USER,
+                    #           [email],
+                    #           fail_silently=False)
                 return redirect(dashboard)
             else:
                 return redirect(mywallet)
         print(context)
-        return render(request,'pay.html',context)
+        return render(request, 'pay.html', context)
 
     return redirect(usersviews.login)
-
 def getTransactionData(arr):
+    if not arr:
+        return None
+
     data = []
-    for i in range(len(arr)):
-        data.append({
-            'id': i+1,
-            'data': arr[i]
-        })
+    for date, other in arr.items():
+        credit = []
+        payment = []
+        for type, transac in other.items():
+            if type == 'credit':
+                for time, details in transac.items():
+                    credit.append({'time': time, 'details': details})
+            if type == 'payment':
+                for time, details in transac.items():
+                    payment.append({'time': time, 'details': details})
+        data.append({'date': date, 'credit': credit, 'payment': payment})
+    # print (data)
     return data
+
 
 def transactions(request):
     if 'uid' in request.session:
         transactions = database.child('transactions').child(request.session['uid']).get().val()
-        if transactions == None:
-            return redirect(dashboard)
-
-        user_transaction = []
-        for id in range(1,len(transactions)):
-            arr = []
-            for details in range(1,len(transactions[id])):
-                arr.append(transactions[id][details])
-            user_transaction.append(arr)
-
-        return render(request,'transactions.html',{'transactions':getTransactionData(user_transaction),
-                                                   'name': request.session['name'],
-                                                   'walletMoney' : request.session['walletMoney'],
-                                                   'count' : notify(request.session['uid'])
-                                                   })
-    return redirect(usersviews.login)
+        return render(request, 'transactions.html', {'transactions': getTransactionData(transactions),
+                                                     'name': request.session['name'],
+                                                     'walletMoney': request.session['walletMoney'],
+                                                     'count': notify(request.session['uid'])
+                                                     })
+    # return redirect(usersviews.login)
+    return redirect(dashboard)
 
 def notify(customerId):
 
     invoices = database.child("user").child("customer").child(customerId).child('invoice').get()
     dict_value = invoices.val()
+    print("dict_value:::" ,dict_value)
     now = datetime.now()
     new_invoices = []
     due_invoices = []
@@ -252,12 +314,12 @@ def notify(customerId):
 
     current_Date = now. strftime("%d/%m/%Y ")
     date,month,year = current_Date.split('/')
-    print(date)
+    print("##############date:::::" , date)
     for key,item in dict_value.items():
         invoice_det = database.child("invoice").child(item).get()
 
         invoice_val = invoice_det.val()
-
+        print("########invoice_val" , invoice_val)
         due_Date = invoice_val['dueDate']
         date1,month1,year1 = due_Date.split('/')
 
@@ -393,3 +455,284 @@ def notifications(request):
 
     return render(request, 'notifications.html',context)
 
+
+
+#################ADMIN
+def adminTransactionHistory(request):
+    transaction = database.child("transactions").get().val()
+    print(transaction)
+    dict = {}
+    transactionList =[]
+    userList = []
+    for uid , dateOb in transaction.items():
+        gmail = database.child("user").child("customer").child(uid).child("email").get().val()
+        for date , typeOb in dateOb.items():
+            for type, timeOb in typeOb.items():
+                if type == 'payment':
+                    for time,value in timeOb.items():
+                        userList.append({'date':date ,'time':time,'amount':value['amount'],'invoiceId':value['invoiceId'] })
+                        dict['gmail'] = gmail
+                    dict['payment'] = userList
+                    userList =[]
+        if bool(dict):
+            transactionList.append(dict)
+        dict = {}
+        print("userList---------------",userList)
+        print("dict------------------", dict)
+
+    print("ISDUHSDSHDUHSHSUDHSHSDJHSJJSJHHsldklakd--------------------------")
+    print(transactionList)
+    return render(request , "admintransactions.html" , {'transactionList':transactionList})
+
+def timepass(request):
+    return render(request,"timepass.html")
+
+
+def getTotalRevenue(month = -1):
+
+    invoices = database.child('invoice').get().val()
+    print(invoices)
+    revenue = 0
+    pendingOutstanding = 0
+    # pendingInvoicesPayment = 0
+    pendingInvoices = 0
+    currentDate = datetime.now()
+    month = currentDate.month
+
+    monthWiseRevenue = {'January' : 0,
+                        'February' : 0,
+                        'March' : 0,
+                        'April' : 0,
+                        'May' : 0,
+                        'June' : 0,
+                        'July' : 0,
+                        'August' : 0,
+                        'September' : 0,
+                        'October' : 0,
+                        'November' : 0,
+                        'December' : 0}
+
+    monthWiseOutstanding = {'January': 0,
+                        'February': 0,
+                        'March': 0,
+                        'April': 0,
+                        'May': 0,
+                        'June': 0,
+                        'July': 0,
+                        'August': 0,
+                        'September': 0,
+                        'October': 0,
+                        'November': 0,
+                        'December': 0}
+
+    monthWisePendingInvoices = {'January': 0,
+                        'February': 0,
+                        'March': 0,
+                        'April': 0,
+                        'May': 0,
+                        'June': 0,
+                        'July': 0,
+                        'August': 0,
+                        'September': 0,
+                        'October': 0,
+                        'November': 0,
+                        'December': 0}
+
+    for invoice in invoices:
+        if invoice is None:
+            continue
+        print('harami')
+        if month != -1 and invoice != None:
+            print('harami111111111111')
+            dueDateInvoice = invoice['dueDate']
+            monthdueDate = dueDateInvoice.split('/')[1]
+            if month != int(monthdueDate):
+                continue
+        print('harami22222222222')
+        revenue += (invoice['totalPrice'] - invoice['remaining'])
+        pendingOutstanding += invoice['remaining']
+
+        if invoice['remaining'] > 0:
+            pendingInvoices += 1
+
+    return {'pendingInvoices':pendingInvoices,
+            'pendingOutstanding':pendingOutstanding,
+            'revenue':revenue}
+
+
+def getDistributedInsights():
+    invoices = database.child('invoice').get().val()
+    print(invoices)
+
+    monthWiseRevenue = {'January': 0,
+                        'February': 0,
+                        'March': 0,
+                        'April': 0,
+                        'May': 0,
+                        'June': 0,
+                        'July': 0,
+                        'August': 0,
+                        'September': 0,
+                        'October': 0,
+                        'November': 0,
+                        'December': 0}
+
+    monthWiseOutstanding = {'January': 0,
+                            'February': 0,
+                            'March': 0,
+                            'April': 0,
+                            'May': 0,
+                            'June': 0,
+                            'July': 0,
+                            'August': 0,
+                            'September': 0,
+                            'October': 0,
+                            'November': 0,
+                            'December': 0}
+
+    monthWisePendingInvoices = {'January': 0,
+                                'February': 0,
+                                'March': 0,
+                                'April': 0,
+                                'May': 0,
+                                'June': 0,
+                                'July': 0,
+                                'August': 0,
+                                'September': 0,
+                                'October': 0,
+                                'November': 0,
+                                'December': 0}
+
+    labels = list(monthWisePendingInvoices.keys())
+    for invoice in invoices:
+        if invoice is None:
+            continue
+        print('harami')
+        dueDateInvoice = invoice['dueDate']
+        monthdueDate = int(dueDateInvoice.split('/')[1])
+
+        print('harami22222222222')
+        monthWiseRevenue[labels[monthdueDate-1]] += (invoice['totalPrice'] - invoice['remaining'])
+        monthWiseOutstanding[labels[monthdueDate-1]] += invoice['remaining']
+
+        if invoice['remaining'] > 0:
+            monthWisePendingInvoices[labels[monthdueDate-1]] += 1
+
+    return monthWiseRevenue,monthWiseOutstanding,monthWisePendingInvoices
+
+def yearWiseDistribution():
+    currentDate = datetime.datetime.now()
+    year = currentDate.year
+    yearWiseRevenue = {}
+    yearWisePendingInvoices = {}
+    yearWiseOutstandings = {}
+
+
+    for i in range(10):
+        yearWiseRevenue[year - i] = 0
+        yearWisePendingInvoices[year - i] = 0
+        yearWiseOutstandings[year - i] = 0
+
+    print(yearWiseOutstandings)
+    print(yearWiseOutstandings.keys())
+    invoices = database.child('invoice').get().val()
+    for invoice in invoices:
+        if invoice is None:
+            continue
+        print('harami')
+        dueDateInvoice = invoice['dueDate']
+        yearDueDate = int(dueDateInvoice.split('/')[2])
+        print('harami1')
+        print(yearDueDate)
+        if yearDueDate in yearWiseOutstandings.keys():
+            print('harami2')
+            yearWiseRevenue[yearDueDate] += (invoice['totalPrice'] - invoice['remaining'])
+            yearWiseOutstandings[yearDueDate] += invoice['remaining']
+            if invoice['remaining'] > 0:
+                yearWisePendingInvoices[yearDueDate] += 1
+
+    return yearWiseRevenue,yearWiseOutstandings, yearWisePendingInvoices
+
+from django.http import JsonResponse
+
+def ChartData(request):
+    qs_count = 10
+    a,b,c = getDistributedInsights()
+    print('tatttiiii',a)
+    # labels_months = ['Jan','Feb','March','April','May','June','July','August','Sept','Oct','Nov','Dec']
+    # # labels = ["Users", "Blue", "Yellow", "Green", "Purple", "Orange"]
+    # month_data = [10, 23, 2, 3, 12, 2,57,44,33,77,11,7]
+    labels_months = list(a.keys())
+    month_data = list(a.values())
+
+    # labels_years = ['2010','2011','2012','2013','2014']
+    # years_data = [10,40,30,20,60]
+
+    a,b,c = yearWiseDistribution()
+
+    labels_years = list(a.keys())
+    years_data = list(a.values())
+    data_monthly = {
+        "labels": labels_months,
+        "default": month_data,
+    }
+    data_yearly_revenue = {
+        "label": 'Revenue',
+        "data": list(a.values()),
+    }
+    data_yearly_pendingInvoices = {
+        "label": "Outstanding",
+        "data": list(c.values()),
+    }
+    data_yearly_pendingOutstanding = {
+        "label": "Pending Invoice",
+        "data": list(b.values()),
+    }
+    a,b,c = getDistributedInsights()
+    month_data_revenue = {
+        "label": 'Revenue',
+        "data": list(a.values()),
+    }
+    month_data_pendingInvoices = {
+        "label": 'Pending Invoices',
+        "data": list(c.values()),
+    }
+    month_data_pendingOutstanding = {
+        "label": 'Pending Outstanding',
+        "data": list(b.values()),
+    }
+    years_data = [data_yearly_revenue, data_yearly_pendingInvoices, data_yearly_pendingOutstanding]
+    month_data = [month_data_revenue, month_data_pendingInvoices, month_data_pendingOutstanding]
+    data_yearly = {
+        "labels": labels_years,
+        "default": years_data,
+    }
+    data_monthly = {
+        "labels" : labels_months,
+        "default" : month_data
+    }
+    data = {
+        "yearly" : data_yearly,
+        "monthly" : data_monthly,
+    }
+    print(data)
+    return JsonResponse(data,safe=False)
+
+
+def invoices(request):
+    if request.method == 'POST':
+        invoiceNumber = request.POST.get('filterInvoice')
+        print(type(invoiceNumber))
+        invoiceTemp = database.child('invoice').child(invoiceNumber).get().val()
+        print(invoiceTemp)
+        temp = []
+        temp.append(invoiceTemp)
+        if invoiceTemp is not None:
+            return render(request, 'invoices.html', {'data': temp})
+    InvoiceData = []
+    invoices = database.child('invoice').get().val()
+    for invoice in invoices:
+        if invoice != None:
+            InvoiceData.append(invoice)
+
+    return render(request,'invoices.html',{'data':InvoiceData})

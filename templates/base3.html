@@ -9,6 +9,35 @@
     <link rel="stylesheet" href="node_modules/mdbootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="node_modules/mdbootstrap/css/mdb.min.css">
     <link rel="stylesheet" href="node_modules/mdbootstrap/css/style.css">
+
+<head>
+     <meta charset="utf-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <!-- Tell the browser to be responsive to screen width -->
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- Font Awesome -->
+      <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+      <!-- Ionicons -->
+      <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+      <!-- Tempusdominus Bbootstrap 4 -->
+      <link rel="stylesheet" href="{% static 'css/tempusdominus-bootstrap-4.min.css' %}">
+      <!-- iCheck -->
+      <link rel="stylesheet" href="{% static 'css/icheck-bootstrap.min.css' %}">
+      <!-- JQVMap -->
+      <link rel="stylesheet" href="{% static 'css/jqvmap.min.css' %}">
+      <!-- Theme style -->
+      <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+      <!-- overlayScrollbars -->
+      <link rel="stylesheet" href="{% static 'css/OverlayScrollbars.min.css' %}">
+      <!-- Daterange picker -->
+      <link rel="stylesheet" href="{% static 'css/daterangepicker.css' %}">
+      <!-- summernote -->
+      <link rel="stylesheet" href="{% static 'css/summernote-bs4.css' %}">
+      <!-- Google Font: Source Sans Pro -->
+      <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
@@ -17,8 +46,12 @@
     <script type="text/javascript" src="node_modules/mdbootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="node_modules/mdbootstrap/js/mdb.min.js"></script>
     <link type="text/css" rel="stylesheet" href="{% static 'css/styles2.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js'></script>
+
 </head>
 <body>
+
 <nav class="navbar navbar-light bg-dark">
   <a class="navbar-brand" style="color: white">Adani Portz and SEZ Ltd</a>
   <form class="form-inline">
@@ -45,9 +78,9 @@
   <i class="fa fa-bell fa-stack-1x fa-inverse"></i>
 </span> </b></a>
                     <a href="{% url 'adminhome' %}" class="nav-link col-md-12"><b>Wallet</b></a>
-                    <a href="{% url 'adminhome' %}" class="nav-link col-md-12"><b>Transaction History</b></a>
-                    <a href="" class="nav-link col-md-12"><b>ChatBot</b></a>
-                     <a href="{% url 'adminhome' %}" class="nav-link col-md-12"><b>Invoices</b></a>
+                    <a href="{% url 'transactionHistory' %}" class="nav-link col-md-12"><b>Transaction History</b></a>
+                    <a href="{%url 'timepass' %}" class="nav-link col-md-12"><b>ChatBot</b></a>
+                    <a href="{% url 'invoices' %}" class="nav-link col-md-12"><b>Invoices</b></a>
                 </div>
             </div>
         </div>
@@ -56,5 +89,10 @@
     {% endblock dashboard %}
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+      {% block jquery %}{% endblock %}
+    })
+    </script>
 </body>
 </html>

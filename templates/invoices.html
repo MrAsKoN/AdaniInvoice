@@ -1,7 +1,21 @@
-{% extends 'base2.html'%}
+{% extends 'base3.html'%}
 {% block dashboard %}
+
 <div class="col-md-10" id="main">
     <h1>Invoices</h1>
+    <div class="container-fluid">
+    {% for lp in data %}
+        {{lp.invoiceNumber}}
+        {{lp.dueDate}}
+        <br>
+    {% endfor %}
+    <form method = "post" action = "{% url 'invoices' %}">
+        {% csrf_token %}
+        <input type="text" name="filterInvoice">
+        <input type="submit" placeholder="Submit ">
+    </form>
+    </div>
+
     <div class="row" id="accordion">
             <div class="card  col-md-6">
             <div class="card-header" id="headingTwo">

@@ -20,7 +20,6 @@ firebase = pyrebase.initialize_app(firebaseconfig)
 auth = firebase.auth()
 database = firebase.database()
 
-
 def register(request):
     if request.method == 'POST':
         publickey = request.POST.get('publickey')
@@ -29,7 +28,7 @@ def register(request):
         phoneno = request.POST.get('phoneno')
         email = request.POST.get('email')
         password = request.POST.get('password')
-
+        user = None
         if not (name and email and password):
             messages.error(request, "Fill all the fields!")
             return redirect(register)
@@ -40,17 +39,27 @@ def register(request):
             return redirect(register)
 
         uid = user['localId']
-        usr = database.child('user').child('customer').child(request.session[uid]).get().val()
-        request.session['name'] = usr['name']
-        request.session['walletMoney'] = usr['wallet']
-        request.session['uid'] = uid
         tokenId = user['idToken']
+
         data = {'publickey': publickey, "name": name, 'email': email, 'address': address, 'phoneno': phoneno, 'wallet': 0,'tokenId':tokenId}
         database.child("user").child("customer").child(uid).set(data)
+
+        database.child('Bank').child(uid).set({
+            'IFSCCode':'IfSC',
+            'balance': 1000
+        })
+        request.session['name'] = name
+        request.session['walletMoney'] = 0
+        request.session['uid'] = uid
+
+        send_mail('Account Created',
+                  'Your Account has been successfully created!',
+                  settings.EMAIL_HOST_USER,
+                  [email],
+                  fail_silently=False)
         # messages.success(request, "User registration successful!")
         return redirect(homeviews.dashboard)
     return render(request, 'register.html')
-
 
 def login(request):
     if request.method == 'POST':
@@ -68,16 +77,17 @@ def login(request):
             return redirect(login)
         session_id = user['localId']
         request.session['uid'] = str(session_id)
-        usr = database.child("user").child("customer").child(request.session['uid']).get().val()
-        request.session['name'] = usr['name']
-        request.session['walletMoney'] = usr['wallet']
+
         users = database.child(role).get()
         print(users)
         for u in users.each():
             print(u.key())
             print(u.val())
             context = u.val()
-            if role == 'users':
+            if role == 'user':
+                usr = database.child("user").child("customer").child(request.session['uid']).get().val()
+                request.session['name'] = usr['name']
+                request.session['walletMoney'] = usr['wallet']
                 return redirect(homeviews.dashboard)
             if role == 'admin':
                 return redirect(homeviews.adminhome)
