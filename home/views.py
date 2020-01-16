@@ -3,15 +3,14 @@ from django.contrib.auth.decorators import login_required
 import users.views as usersviews
 from firebase import getReferences
 from datetime import datetime
+from django.contrib import messages
 auth, database = getReferences()
 
 def dashboard(request):
     if 'uid' in request.session:
         check = False
         invoices = database.child('invoice').get().val()
-        usr = database.child('user').child('customer').child(request.session['uid']).get().val()
-        uname = usr['name']
-        wallet = usr['wallet']
+
         user_invoices = []
 
         if request.method == 'POST':
@@ -26,8 +25,8 @@ def dashboard(request):
 
                 return render(request,'newhome.html',{
                     'invoices': user_invoices,
-                    'name': uname,
-                    'wallet': wallet,
+                    'name': request.session['name'],
+                    'walletMoney': request.session['walletMoney'],
                     'check': check
                 })
             else:
@@ -40,9 +39,9 @@ def dashboard(request):
 
                 return render(request, 'newhome.html', {
                     'invoices': user_invoices,
-                    'name': uname,
-                    'wallet': wallet,
-                    'check':check
+                    'name': request.session['name'],
+                    'walletMoney': request.session['walletMoney'],
+                    'check': check
                 })
         if invoices != None:
             for invoice in invoices:
@@ -102,7 +101,7 @@ def dashboard(request):
         #storage.child("invoices").child(user['localId']).child(value).put("C:/Users/DeepiakP/Downloads/Carol.pdf",user['idToken'] )
         customerId = request.session['uid']
         count = notify(customerId)
-        return render(request, 'newhome.html', {'invoices': user_invoices, 'name': uname,'wallet':wallet,'check':False,'count':count})
+        return render(request, 'newhome.html', {'invoices': user_invoices, 'name': request.session['name'],'walletMoney': request.session['walletMoney'],'check':False,'count':count})
 
     return redirect(usersviews.login)
 
@@ -118,11 +117,27 @@ def adminhome(request):
         return redirect(usersviews.login)
     return render(request,'adminhome.html')
 
-
-def wallet(request):
+def mywallet(request):
     if 'uid' in request.session:
-        return render(request,'wallet.html')
+        curr_balance = int(database.child('Bank').child(request.session['uid']).child('balance').get().val())
+        if request.method == 'POST':
+            credit = int(request.POST['credit'])
+            if credit <= 0:
+                messages.error(request,'Invalid Credit Amount')
+                return redirect(mywallet)
+            curr_balance -= credit
+            database.child('Bank').child(request.session['uid']).update({
+                'balance': curr_balance
+            })
+            currWallet = int(database.child('user').child('customer').child(request.session['uid']).child('wallet').get().val())
+            currWallet+=credit
+            database.child('user').child('customer').child(request.session['uid']).update({
+                'wallet': currWallet
+            })
+            return redirect(dashboard)
+        return render(request,'wallet.html', {'curr_balance': curr_balance ,'name':request.session['name'] , 'walletMoney': request.session['walletMoney']})
     return redirect(usersviews.login)
+
 
 def pay(request,id):
     if 'uid' in request.session:
@@ -137,14 +152,18 @@ def pay(request,id):
             context = {
                 'diff': 'Rs. {}'.format(wallet - remaining),
                 'remaining': 'Rs. {}'.format(remaining),
-                'wallet': 'Rs. {}'.format(wallet)
+                'wallet': 'Rs. {}'.format(wallet),
+                'name': request.session['name'],
+                'walletMoney': request.session['walletMoney'],
             }
         else:
             diff = 0
             context = {
                 'diff': 'Rs. 0',
                 'remaining': 'Rs. {}'.format(remaining),
-                'wallet': 'Rs. {}'.format(wallet)
+                'wallet': 'Rs. {}'.format(wallet),
+                'name': request.session['name'],
+                'walletMoney': request.session['walletMoney'],
             }
         if request.method == 'POST':
             if wallet != 0:
@@ -186,8 +205,8 @@ def pay(request,id):
                     })
                 return redirect(dashboard)
             else:
-                return redirect(wallet)
-
+                return redirect(mywallet)
+        print(context)
         return render(request,'pay.html',context)
 
     return redirect(usersviews.login)
@@ -214,7 +233,11 @@ def transactions(request):
                 arr.append(transactions[id][details])
             user_transaction.append(arr)
 
-        return render(request,'transactions.html',{'transactions':getTransactionData(user_transaction)})
+        return render(request,'transactions.html',{'transactions':getTransactionData(user_transaction),
+                                                   'name': request.session['name'],
+                                                   'walletMoney' : request.session['walletMoney'],
+                                                   'count' : notify(request.session['uid'])
+                                                   })
     return redirect(usersviews.login)
 
 def notify(customerId):
@@ -363,7 +386,9 @@ def notifications(request):
     context = {
         'new_Invoice':new_invoices,
         'due_Invoice':due_invoices,
-        'count':count
+        'count':count,
+        'walletMoney': request.session['walletMoney'],
+        'name':request.session['name'],
     }
 
     return render(request, 'notifications.html',context)

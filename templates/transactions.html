@@ -10,8 +10,9 @@
             {% for t in transactions %}
                 <h3>Invoice No = {{ t.id }}</h3><br>
                 {% for detail in t.data %}
-                    <h5>{{ detail.amount }}</h5>
-                    <h5>{{ detail.modeOfPayment }}</h5>
+                    <h5>Transfer Amount : {{ detail.amount }}</h5>
+                    <h5>Mode Of Payment :{{ detail.modeOfPayment }}</h5>
+                    <h5>Closing Balance - {{detail.closing_balance }}</h5>
                     <br>
                 {% endfor %}
                 <hr>

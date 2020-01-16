@@ -1,5 +1,22 @@
 {% extends "base2.html" %}
 {% load static %}
 {% block dashboard %}
-    <p> Rushabh se discuss karna hai wallet credit</p>
+
+    <div class="col-md-10" id='main'>
+        <h1>Wallet</h1>
+        <form method="post">
+            {% csrf_token %}
+            Current Balance = {{ curr_balance }}<br>
+            Credit Amount = <input type="number" name="credit"><br>
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                    <br>
+                {% endfor %}
+            {% endif %}
+            <input type="submit" value="CREDIT">
+
+        </form>
+    </div>
+
 {% endblock dashboard %}

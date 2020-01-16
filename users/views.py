@@ -40,6 +40,9 @@ def register(request):
             return redirect(register)
 
         uid = user['localId']
+        usr = database.child('user').child('customer').child(request.session[uid]).get().val()
+        request.session['name'] = usr['name']
+        request.session['walletMoney'] = usr['wallet']
         request.session['uid'] = uid
         tokenId = user['idToken']
         data = {'publickey': publickey, "name": name, 'email': email, 'address': address, 'phoneno': phoneno, 'wallet': 0,'tokenId':tokenId}
@@ -65,6 +68,9 @@ def login(request):
             return redirect(login)
         session_id = user['localId']
         request.session['uid'] = str(session_id)
+        usr = database.child("user").child("customer").child(request.session['uid']).get().val()
+        request.session['name'] = usr['name']
+        request.session['walletMoney'] = usr['wallet']
         users = database.child(role).get()
         print(users)
         for u in users.each():
