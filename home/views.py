@@ -97,6 +97,7 @@ def pay(request,id):
                     else:
                         tid = len(transactions)
                     db.child('transactions').child(request.session['uid']).child(id).child(tid).set({
+                        'invoiceId':id,
                         'amount': remaining,
                         'modeOfPayment': 'Wallet'
                     })
@@ -114,6 +115,7 @@ def pay(request,id):
                     else:
                         tid = len(transactions)
                     db.child('transactions').child(request.session['uid']).child(id).child(tid).set({
+                        'invoiceId': id,
                         'amount': wallet,
                         'modeOfPayment': 'Wallet'
                     })
@@ -129,4 +131,29 @@ def pay(request,id):
 
         return render(request,'pay.html',context)
 
+    return redirect(usersviews.login)
+
+def getTransactionData(arr):
+    data = []
+    for i in range(len(arr)):
+        data.append({
+            'id': i+1,
+            'data': arr[i]
+        })
+    return data
+
+def transactions(request):
+    if 'uid' in request.session:
+        transactions = db.child('transactions').child(request.session['uid']).get().val()
+        if transactions == None:
+            return redirect(dashboard)
+
+        user_transaction = []
+        for id in range(1,len(transactions)):
+            arr = []
+            for details in range(1,len(transactions[id])):
+                arr.append(transactions[id][details])
+            user_transaction.append(arr)
+
+        return render(request,'transactions.html',{'transactions':getTransactionData(user_transaction)})
     return redirect(usersviews.login)

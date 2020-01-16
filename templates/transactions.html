@@ -56,55 +56,19 @@
             </div>
         </div>
         <div class="col-md-10" id="main">
-            <h1>Make Payment</h1>
+            <h1>Transactions</h1>
 
-            <div class="card card-cascade narrower">
-                <div class="px-4">
-                    <div class="table-wrapper">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                            <tr>
-                                <th>
-                                    <label class="form-check-label" for="checkbox" class="mr-2 label-table"></label>
-                                </th>
-                                <th class="th-lg">
-                                    <span>Field</span>
-                                </th>
 
-                                <th class="th-lg">
-                                    <span>Amount</span>
-                                </th>
-                            </tr>
-                            </thead>
-                            <!--Table body-->
-                            <tbody>
-                            <tr>
-                                <th scope="row">
-                                </th>
-                                <td>Wallet Balance</td>
-                                <td>{{ wallet }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                </th>
-                                <td>Outstanding Amount</td>
-                                <td>{{ remaining }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                </th>
-                                <td>Wallet Balance after Transaction</td>
-                                <td>{{ diff }}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <form method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">PAY</button>
-            </form>
+
+            {% for t in transactions %}
+                <h3>Invoice No = {{ t.id }}</h3><br>
+                {% for detail in t.data %}
+                    <h5>{{ detail.amount }}</h5>
+                    <h5>{{ detail.modeOfPayment }}</h5>
+                    <br>
+                {% endfor %}
+                <hr>
+            {% endfor %}
         </div>
     </div>
 </div>
