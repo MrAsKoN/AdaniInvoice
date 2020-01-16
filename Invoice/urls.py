@@ -30,5 +30,6 @@ urlpatterns = [
     # path('invoices/',homeviews.invoices,name='invoices'),
     path('wallet', homeviews.wallet,name='wallet'),
     path('pay/<id>',homeviews.pay,name='pay'),
-    path('transactions/',homeviews.transactions,name='transactions')
+    path('transactions/',homeviews.transactions,name='transactions'),
+    path('notifications/',homeviews.notifications,name='notifications')
 ]

@@ -1,0 +1,19 @@
+{%extends 'base2.html'%}
+{% block dashboard %}
+
+You have {{count}} Notifications
+
+
+<h3>New Invoices</h3>
+{%for newinvo in new_Invoice %}
+    Invoice Number :{{newinvo.invoiceNumber}}
+    Total Price : {{newinvo.totalPrice}}
+{%endfor%}
+<h3 style="color:red">Due Invoices</h3>
+{%for newinvo in due_Invoice %}
+    Invoice Number :{{newinvo.invoiceNumber}}
+    Total Price : {{newinvo.totalPrice}}
+    <br>
+{%endfor%}
+bitch
+{% endblock dashboard %}
