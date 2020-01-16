@@ -39,14 +39,15 @@
         <div class="col-md-2 bg-light min-vh-100">
             <div class="py-2 sticky-top flex-grow-1">
                 <div class="nav flex-sm-column">
-                    <a href="{% url 'dashboard' %}" class="nav-link col-md-12"><b>Dashboard</b></a>
-                    <a href="{% url 'notifications' %}" class="nav-link col-md-12"><b>Notifications:<span class="fa-stack fa-lg has-badge" data-count={{count}}>
+                    <a href="{% url 'adminhome' %}" class="nav-link col-md-12"><b>Dashboard</b></a>
+                    <a href="{% url 'adminhome' %}" class="nav-link col-md-12"><b>Notifications:<span class="fa-stack fa-lg has-badge" data-count=1>
   <i class="fa fa-circle fa-stack-2x"></i>
   <i class="fa fa-bell fa-stack-1x fa-inverse"></i>
 </span> </b></a>
-                    <a href="{% url 'wallet' %}" class="nav-link col-md-12"><b>Wallet</b></a>
-                    <a href="{% url 'transactions' %}" class="nav-link col-md-12"><b>Transaction History</b></a>
+                    <a href="{% url 'adminhome' %}" class="nav-link col-md-12"><b>Wallet</b></a>
+                    <a href="{% url 'adminhome' %}" class="nav-link col-md-12"><b>Transaction History</b></a>
                     <a href="" class="nav-link col-md-12"><b>ChatBot</b></a>
+                     <a href="{% url 'adminhome' %}" class="nav-link col-md-12"><b>Invoices</b></a>
                 </div>
             </div>
         </div>

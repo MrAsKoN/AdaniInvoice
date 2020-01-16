@@ -110,8 +110,12 @@ def dashboard(request):
 def adminhome(request):
     try:
         print(request.session['uid'])
+        adminData = database.child("user").child("admin").child("1").get()
+        print(adminData.val())
+        for key,value in adminData.val().items():
+            print(key,value)
     except:
-        return redirect(usersviews.showlogin)
+        return redirect(usersviews.login)
     return render(request,'adminhome.html')
 
 

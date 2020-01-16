@@ -1,59 +1,6 @@
+{% extends "base2.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
-    <link rel="stylesheet" href="node_modules/mdbootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/mdbootstrap/css/mdb.min.css">
-    <link rel="stylesheet" href="node_modules/mdbootstrap/css/style.css">
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-            crossorigin="anonymous"></script>
-    <script type="text/javascript" src="node_modules/mdbootstrap/js/jquery.min.js"></script>
-    <script type="text/javascript" src="node_modules/mdbootstrap/js/popper.min.js"></script>
-    <script type="text/javascript" src="node_modules/mdbootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="node_modules/mdbootstrap/js/mdb.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="{% static 'css/styles2.css' %}">
-</head>
-<body>
-<nav class="navbar navbar-light bg-dark">
-    <a class="navbar-brand" style="color: white">Adani Portz and SEZ Ltd</a>
-    <form class="form-inline">
-        <div class="btn-group">
-            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {{ name }}
-            </button>
-            <div class="dropdown-menu dropdown-menu-right">
-                <button class="dropdown-item" type="button">My Profile</button>
-                <button class="dropdown-item" type="button">Wallet - Rs. {{ wallet }}</button>
-                <button class="dropdown-item" type="button" onclick="location.href={% url 'logout' %}">Logout</button>
-            </div>
-        </div>
-    </form>
-</nav>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-2 bg-light min-vh-100">
-            <div class="py-2 sticky-top flex-grow-1">
-                <div class="nav flex-sm-column">
-                    <a href="{% url 'dashboard' %}" class="nav-link col-md-12"><b>Dashboard</b></a>
-                    <a href="{% url 'notifications' %}" class="nav-link col-md-12"><b>Notifications: {{count}}</b></a>
-                    <a href="{% url 'wallet' %}" class="nav-link col-md-12"><b>Wallet</b></a>
-                    <a href="{% url 'transactions' %}" class="nav-link col-md-12"><b>Transaction History</b></a>
-                    <a href="" class="nav-link col-md-12"><b>ChatBot</b></a>
-                </div>
-            </div>
-        </div>
+{% block dashboard %}
         <div class="col-md-10" id="main">
             <h1>Dashboard</h1>
 
@@ -118,7 +65,4 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
-</body>
-</html>
+{% endblock dashboard %}
