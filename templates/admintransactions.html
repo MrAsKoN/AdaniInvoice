@@ -1,68 +1,73 @@
 {% extends 'base3.html' %}
-{% load static%}
+{% load static %}
 {% block dashboard %}
-<div class="wrapper">
-    {% for transaction in transactionList %}
+    <div class="col-md-10" id="main">
+        <h1>Transcation History</h1>
+        {% for transaction in transactionList %}
+            <div class="accordion" id="accordionExample{{ transaction.i }}">
+                <div class="card">
+                    <div class="card-header" id="heading{{ transaction.i }}">
+                        <h2 class="mb-0">
+                            <button class="btn" type="button" data-toggle="collapse"
+                                    data-target="#collapse{{ transaction.i }}" aria-expanded="true"
+                                    aria-controls="collapse{{ transaction.i }}">
+                                <h4>{{ transaction.gmail }}</h4>
+                            </button>
+                        </h2>
+                    </div>
 
-        <div class="accordion" id="accordionExample">
-         <div class="card">
-    <div class="card-header" id="headingOne">
-      <h2 class="mb-0">
-        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-        <p>Email: {{transaction.gmail}}</p>
-        </button>
-      </h2>
-    </div>
+                    <div id="collapse{{ transaction.i }}" class="collapse show"
+                         aria-labelledby="heading{{ transaction.i }}"
+                         data-parent="#accordionExample{{ transaction.i }}">
+                        <div class="card-body">
+                            <div class="card card-cascade narrower">
+                                <div class="px-4">
+                                    <div class="table-wrapper">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                            <tr>
+                                                <th>
+                                                    <label class="form-check-label" for="checkbox"
+                                                           class="mr-2 label-table"></label>
+                                                </th>
+                                                <th class="th-lg">
+                                                    <span>Invoice No.</span>
+                                                </th>
 
-    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-      <div class="card-body">
-          <div class="card card-cascade narrower">
-                <div class="px-4">
-                    <div class="table-wrapper">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                            <tr>
-                                <th>
-                                    <label class="form-check-label" for="checkbox" class="mr-2 label-table"></label>
-                                </th>
-                                <th class="th-lg">
-                                    <span>Invoice No.</span>
-                                </th>
+                                                <th class="th-lg">
+                                                    <span>Payment Date</span>
+                                                </th>
+                                                <th class="th-lg">
+                                                    <span>Time</span>
+                                                </th>
+                                                <th class="th-lg">
+                                                    <span>Total Amount</span>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <!--Table body-->
+                                            <tbody>
+                                            {% for transact in transaction.payment %}
+                                                <tr>
+                                                    <th scope="row">
+                                                    </th>
+                                                    <td>{{ transact.invoiceId }}</td>
+                                                    <td>{{ transact.date }}</td>
+                                                    <td>{{ transact.time }}</td>
+                                                    <td>{{ transact.amount }}</td>
 
-                                <th class="th-lg">
-                                    <span>Payment Date</span>
-                                </th>
-                                <th class="th-lg">
-                                    <span>Time</span>
-                                </th>
-                                <th class="th-lg">
-                                    <span>Total Amount</span>
-                                </th>
-                            </tr>
-                            </thead>
-                            <!--Table body-->
-                            <tbody>
-                            {% for transact in transaction.payment %}
-                                <tr>
-                                    <th scope="row">
-                                    </th>
-                                    <td>{{transact.invoiceId}}</td>
-                                    <td>{{transact.date}}</td>
-                                    <td>{{transact.time}}</td>
-                                    <td>{{transact.amount}}</td>
-
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-    {% endfor %}
-</div>
+        {% endfor %}
+    </div>
 {% endblock dashboard %}

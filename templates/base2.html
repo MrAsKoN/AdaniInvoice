@@ -4,19 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
+    <link type="text/css" rel="stylesheet" href="{% static 'css/basestyles2.css' %}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
-    <link rel="stylesheet" href="node_modules/mdbootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/mdbootstrap/css/mdb.min.css">
-    <link rel="stylesheet" href="node_modules/mdbootstrap/css/style.css">
+{#    <link rel="stylesheet" href="node_modules/mdbootstrap/css/bootstrap.min.css">#}
+{#    <link rel="stylesheet" href="node_modules/mdbootstrap/css/mdb.min.css">#}
+{#    <link rel="stylesheet" href="node_modules/mdbootstrap/css/style.css">#}
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="node_modules/mdbootstrap/js/jquery.min.js"></script>
-    <script type="text/javascript" src="node_modules/mdbootstrap/js/popper.min.js"></script>
-    <script type="text/javascript" src="node_modules/mdbootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="node_modules/mdbootstrap/js/mdb.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="{% static 'css/styles2.css' %}">
+{#    <script type="text/javascript" src="node_modules/mdbootstrap/js/jquery.min.js"></script>#}
+{#    <script type="text/javascript" src="node_modules/mdbootstrap/js/popper.min.js"></script>#}
+{#    <script type="text/javascript" src="node_modules/mdbootstrap/js/bootstrap.min.js"></script>#}
+{#    <script type="text/javascript" src="node_modules/mdbootstrap/js/mdb.min.js"></script>#}
+
 </head>
 <body>
 <nav class="navbar navbar-light bg-dark">
@@ -40,10 +41,9 @@
             <div class="py-2 sticky-top flex-grow-1">
                 <div class="nav flex-sm-column">
                     <a href="{% url 'dashboard' %}" class="nav-link col-md-12"><b>Dashboard</b></a>
-                    <a href="{% url 'notifications' %}" class="nav-link col-md-12"><b>Notifications:<span class="fa-stack fa-lg has-badge" data-count={{count}}>
-  <i class="fa fa-circle fa-stack-2x"></i>
+                    <a href="{% url 'notifications' %}" class="nav-link col-md-12"><b>Notifications</b>:<span class="fa-stack fa-lg has-badge" data-count={{count}}><i class="fa fa-circle fa-stack-2x"></i>
   <i class="fa fa-bell fa-stack-1x fa-inverse"></i>
-</span> </b></a>
+</span></a>
                     <a href="{% url 'wallet' %}" class="nav-link col-md-12"><b>Wallet</b></a>
                     <a href="{% url 'transactions' %}" class="nav-link col-md-12"><b>Transaction History</b></a>
                     <a href="" class="nav-link col-md-12"><b>ChatBot</b></a>
@@ -55,5 +55,15 @@
     {% endblock dashboard %}
     </div>
 </div>
+{#<script type="text/javascript">#}
+{#      /* NOTE : Use web server to view HTML files as real-time update will not work if you directly open the HTML file in the browser. */#}
+{#      (function(d, m){#}
+{#        var kommunicateSettings = {"appId":"aa183be9605e8198e8747b625284a265","popupWidget":true,"automaticChatOpenOnNavigation":true};#}
+{#        var s = document.createElement("script"); s.type = "text/javascript"; s.async = true;#}
+{#        s.src = "https://widget.kommunicate.io/v2/kommunicate.app";#}
+{#        var h = document.getElementsByTagName("head")[0]; h.appendChild(s);#}
+{#        window.kommunicate = m; m._globals = kommunicateSettings;#}
+{#      })(document, window.kommunicate || {});#}
+{#  </script>#}
 </body>
 </html>

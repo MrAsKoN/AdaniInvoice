@@ -65,33 +65,24 @@ def login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        role = request.POST.get('role')
-        print(role)
-        if not role:
-            messages.error(request, "Please select your role!")
-            return redirect(login)
         try:
             user = auth.sign_in_with_email_and_password(email, password)
         except:
             messages.error(request, "The Email or password you have entered are invalid!")
             return redirect(login)
+
         session_id = user['localId']
         request.session['uid'] = str(session_id)
 
-        users = database.child(role).get()
-        print(users)
-        for u in users.each():
-            print(u.key())
-            print(u.val())
-            context = u.val()
-            if role == 'user':
-                usr = database.child("user").child("customer").child(request.session['uid']).get().val()
-                request.session['name'] = usr['name']
-                request.session['walletMoney'] = usr['wallet']
-                return redirect(homeviews.dashboard)
-            if role == 'admin':
-                return redirect(homeviews.adminhome)
-        return redirect(homeviews.dashboard)
+        admin_email = database.child('user').child('admin').child('1').child('email').get().val()
+        if email == admin_email:
+            return redirect(homeviews.adminhome)
+        else:
+            usr = database.child("user").child("customer").child(request.session['uid']).get().val()
+            request.session['name'] = usr['name']
+            request.session['walletMoney'] = usr['wallet']
+            return redirect(homeviews.dashboard)
+
     return render(request, 'login.html')
 
 

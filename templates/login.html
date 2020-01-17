@@ -5,10 +5,16 @@
 
         <form class="form" method="post">
             {% csrf_token %}
-
+            {% if messages %}
+                <div class="alert alert-danger">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <div class="inputfield">
-            <label><b>Email</b></label>
-            <input class="input" type="email" name="email" placeholder="Email">
+                <label><b>Email</b></label>
+                <input class="input" type="email" name="email" placeholder="Email">
             </div>
 
             <div class="inputfield">
@@ -16,22 +22,22 @@
                 <input class="input" type="password" name="password" placeholder="Password">
             </div>
 
-            <div class="inputfield">
-                <label>Role</label>
-                <div class="custom_select">
-                    <select name="role">
-                        <option value="">Select</option>
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-            </div>
-
+{#            <div class="inputfield">#}
+{#                <label>Role</label>#}
+{#                <div class="custom_select">#}
+{#                    <select name="role">#}
+{#                        <option value="">Select</option>#}
+{#                        <option value="user">User</option>#}
+{#                        <option value="admin">Admin</option>#}
+{#                    </select>#}
+{#                </div>#}
+{#            </div>#}
+        <br>
             <div class="inputfield">
                 <button class="btn" type="submit">Login</button>
             </div>
 
         </form>
-        <span>Don't have an account?</span><a href={% url 'register' %}>Register</a><span> here.</span>
+        <br><span>Don't have an account?</span><a style="color: black" href={% url 'register' %}><b>Register</b></a><span> here.</span>
     </div>
 {% endblock content %}
